@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart picture frame - printable enclosure</title>
+<style>
+:root{font-family:Inter,"Segoe UI",sans-serif;color:#263c39;background:#f3f1eb;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}header{padding:28px 5vw 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #d9ddd3}
+.brand{font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:650}.badge{background:#e3eadf;border:1px solid #c4d2bf;border-radius:24px;padding:8px 13px;font-size:12px}
+main{max-width:1500px;margin:auto;padding:32px 5vw}h1{font-family:Georgia,serif;font-size:clamp(34px,4vw,54px);font-weight:400;margin:8px 0 12px;letter-spacing:-1.5px}p{line-height:1.6}.intro{max-width:700px;color:#5a6d65;margin:0 0 28px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:24px;align-items:start}.stage{position:relative;min-height:580px;background:radial-gradient(ellipse at 50% 40%,#fcfbf7,#e2e5d9);border:1px solid #d5dacd;border-radius:24px;overflow:hidden;position:sticky;top:20px}
+canvas{width:100%;height:580px;display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}.stage-label{position:absolute;left:24px;top:21px;font-size:11px;letter-spacing:1.7px;text-transform:uppercase;color:#637368;pointer-events:none}.hint{position:absolute;bottom:20px;left:24px;font-size:12px;color:#647268;pointer-events:none}
+.scale{position:absolute;right:20px;bottom:18px;font-size:12px;color:#647268}.panel{background:#fcfbf7;border:1px solid #d9ddd3;border-radius:20px;padding:22px;margin-bottom:16px}h2{font-size:15px;margin:0 0 16px}.eyebrow{font-size:11px;letter-spacing:1.6px;color:#758374;text-transform:uppercase}
+.swatches{display:flex;gap:12px;margin:12px 0 20px}.swatch{width:33px;height:33px;border-radius:50%;border:3px solid #fcfbf7;outline:1px solid #bbc5b7;cursor:pointer}.swatch[aria-pressed=true]{outline:2px solid #263c39}
+button:not(.swatch),.download{font:inherit;font-size:12px;border:1px solid #cbd3c5;background:#f0f3e9;color:#263c39;border-radius:9px;padding:9px 12px;cursor:pointer;text-decoration:none;display:inline-block}button:hover,.download:hover{background:#e0e8da}.buttons{display:flex;gap:7px;flex-wrap:wrap}
+label{font-size:13px;display:flex;align-items:center;gap:8px;margin:14px 0}input[type=range]{width:100%;accent-color:#657e68}input[type=checkbox]{accent-color:#657e68}dl{display:grid;grid-template-columns:1fr auto;gap:12px;font-size:12px;margin:0}dt{color:#627166}dd{margin:0;font-weight:600}
+.notice{border-left:3px solid #c3a568;padding-left:13px;font-size:12px;color:#6a604c;line-height:1.6}.downloads{display:flex;flex-direction:column;gap:8px}.download{background:transparent}
+.bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:28px}.bottom p,.bottom li{font-size:13px;color:#5a6d65;line-height:1.7}.bottom h2{margin-bottom:10px}.bottom a{color:#345b4a}footer{font-size:12px;color:#6e7c6f;margin-top:26px;padding-top:18px;border-top:1px solid #d9ddd3}
+#error{display:none;color:#8c302b;padding:70px 30px;position:absolute;inset:0;background:#fff4ed;z-index:2}#view-status{font-size:12px;color:#647268;margin-top:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.stage{min-height:450px;position:relative;top:0}canvas{height:450px}.bottom{grid-template-columns:1fr}header{padding:20px 5vw}.badge{max-width:170px;text-align:center}}
+</style>
+</head>
+<body>
+<header><span class="brand">Little objects / family workshop</span><span class="badge">FNK0086 &middot; actual-scale CAD</span></header>
+<main>
+<div class="eyebrow">01 / Smart picture frame</div>
+<h1>A little home for your memories.</h1>
+<p class="intro">A compact, soft-edged surround that hugs the complete Freenove kit: 1 mm of side clearance, a slim band above for two screws and a band below for the USB plug and the other two. Removable back and a separate 10&deg; desk plinth.</p>
+<div class="layout">
+<section class="stage" aria-label="Interactive three-dimensional enclosure">
+<span class="stage-label">Printable geometry / millimetres</span>
+<canvas id="viewport" aria-label="Drag to orbit the 3D frame; scroll to zoom" tabindex="0"></canvas>
+<div id="error" role="alert"></div><span class="hint">Drag to orbit &middot; scroll to zoom</span><span class="scale" id="scale-label"></span>
+</section>
+<aside>
+<section class="panel"><h2>Make it yours</h2><span class="eyebrow">Frame finish / preview only</span>
+<div class="swatches">
+<button class="swatch" style="background:#e9dfce" data-color="#e9dfce" aria-label="Warm ivory" aria-pressed="true"></button>
+<button class="swatch" style="background:#a1b39b" data-color="#a1b39b" aria-label="Sage green" aria-pressed="false"></button>
+<button class="swatch" style="background:#d3a49d" data-color="#d3a49d" aria-label="Dusty rose" aria-pressed="false"></button>
+<button class="swatch" style="background:#434e53" data-color="#434e53" aria-label="Graphite" aria-pressed="false"></button>
+</div>
+<label for="explode">Exploded assembly <span id="explode-value">0%</span></label>
+<input id="explode" type="range" min="0" max="100" value="0">
+<label><input id="shell" type="checkbox" checked> Front shell</label>
+<label><input id="lid" type="checkbox" checked> Rear cover</label>
+<label><input id="kit" type="checkbox"> Kit envelope / fit reference</label>
+<label><input id="stand" type="checkbox" checked> Desk plinth</label>
+<div class="buttons"><button id="front">Front</button><button id="rear">Rear</button><button id="perspective">Perspective</button><button id="reset">Reset</button></div>
+<div id="view-status" aria-live="polite">Assembly view</div>
+</section>
+<section class="panel"><h2>Designed around real hardware</h2><dl><dt>Manufacturer kit envelope</dt><dd>85 &times; 112 &times; 16</dd><dt>Outer frame</dt><dd id="dim-frame"></dd><dt>Viewing window</dt><dd id="dim-window"></dd><dt>Largest print footprint</dt><dd id="dim-footprint"></dd><dt>All dimensions</dt><dd>mm</dd></dl>
+<p class="notice">Prototype / fit check required. Kit envelope is manufacturer-published. Screen position was measured from the kit illustration; rear support locations are inferred. Check the 1:1 template against your board before printing the shell.</p></section>
+<section class="panel"><h2>Print files</h2><div class="downloads">
+<a class="download" href="print/alignment-gauge.stl" download>01 &middot; Alignment gauge STL</a>
+<a class="download" href="print/front-shell.stl" download>02 &middot; Front shell STL</a>
+<a class="download" href="print/rear-cover.stl" download>03 &middot; Rear cover STL</a>
+<a class="download" href="print/desk-stand.stl" download>04 &middot; Desk plinth STL</a>
+<a class="download" href="alignment-template.svg" target="_blank">1:1 paper template with assumed layout</a>
+<a class="download" href="reference/assumed-layout-overlay.jpg" target="_blank">Assumed layout drawn over the kit photo</a>
+<a class="download" href="fusion/smart-picture-frame.f3d" download>Fusion 360 design (.f3d, parametric)</a>
+<a class="download" href="fusion/smart-picture-frame.step" download>STEP assembly</a>
+</div></section>
+</aside></div>
+<section class="bottom">
+<article><h2>Quiet on the outside.</h2><p>The camera, speakers and wiring hide behind the mat. The window sits where the screen really is on the board (right of centre, low), so the frame stays as small as the kit allows. The landscape-and-clock image is a mockup, not running firmware.</p></article>
+<article><h2>Serviceable on the inside.</h2><p>Four M3 screws secure the back. The USB plug sits in the bottom band and the cable leaves through the back; the plinth has a matching notch. Vent slots let heat and some speaker sound escape. Rear seats use removable insulating foam tape; no PCB holes are assumed.</p></article>
+<article><h2>Print, check, then assemble.</h2><p>Use a 0.4 mm nozzle, 0.2 mm layers, four walls and 15&ndash;20% infill. The STLs are already bed-oriented. Check the paper template at 100% scale and the thin gauge before a full print. See <a href="README.md">assembly notes and dimension sources</a>.</p></article>
+</section>
+<footer>Local-only preview. No CDN, network requests, tracking, or firmware changes. Colors are material suggestions; STL files contain geometry only.</footer>
+</main>
+<script>
+"use strict";
+const MODEL=__MODEL_DATA__;
+const P=__PARAMETERS__;
+const D=MODEL.derived;
+P.case_width=D.case_width;P.case_height=D.case_height;P.case_depth=D.case_depth;P.stand_width=D.stand_width;
+document.getElementById("scale-label").textContent=`${D.case_width} \u00d7 ${D.case_height} \u00d7 ${D.case_depth} mm`;
+document.getElementById("dim-frame").textContent=`${D.case_width} \u00d7 ${D.case_height} \u00d7 ${D.case_depth}`;
+document.getElementById("dim-window").textContent=`${P.window_width} \u00d7 ${P.window_height}`;
+document.getElementById("dim-footprint").textContent=`${D.stand_width} \u00d7 ${D.case_height}`;
+const canvas=document.getElementById("viewport");
+const errorBox=document.getElementById("error");
+function fail(message){errorBox.style.display="block";errorBox.textContent=message;}
+const gl=canvas.getContext("webgl",{antialias:true,alpha:true,preserveDrawingBuffer:true});
+if(!gl){fail("WebGL is unavailable. Open this page in a hardware-accelerated browser. The printable STL files are still available below.");}
+else {try {start();}catch(error){fail("Preview failed: "+error.message);console.error(error);}}
+function start(){
+ const vs=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec2 aUV;
+ uniform mat4 uMVP;uniform mat4 uView;varying vec3 vNormal;varying vec2 vUV;
+ void main(){gl_Position=uMVP*vec4(aPosition,1.0);vNormal=mat3(uView)*aNormal;vUV=aUV;}`;
+ const fs=`precision mediump float;varying vec3 vNormal;varying vec2 vUV;uniform vec3 uColor;uniform sampler2D uTexture;
+ void main(){if(vUV.x>=0.0){gl_FragColor=texture2D(uTexture,vUV);return;}
+ vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;
+ float light=0.55+0.35*max(dot(n,normalize(vec3(-0.4,0.8,1.0))),0.0)+0.10*max(dot(n,vec3(0.,0.,1.)),0.);
+ gl_FragColor=vec4(uColor*light,1.0);}`;
+ function shader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+ const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);
+ if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
+ gl.useProgram(program);
+ const loc={};for(const n of ["aPosition","aNormal","aUV"])loc[n]=gl.getAttribLocation(program,n);
+ for(const n of ["uMVP","uView","uColor","uTexture"])loc[n]=gl.getUniformLocation(program,n);
+ const identity=()=>[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+ function multiply(a,b){const o=new Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o;}
+ function perspective(aspect){const f=1/Math.tan(Math.PI/8),near=1,far=2500;return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)/(near-far),-1,0,0,2*far*near/(near-far),0];}
+ function rotationX(a){const c=Math.cos(a),s=Math.sin(a);return [1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1];}
+ function rotationY(a){const c=Math.cos(a),s=Math.sin(a);return [c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];}
+ const rad=P.stand_angle*Math.PI/180;
+ function world(v,name,explode){
+  let [x,y,z]=v;
+  if(name==="desk-stand"){
+   const clearance=P.stand_clearance/2;
+   const front=D.slot_y+Math.cos(rad)*clearance;
+   const slotZ=6+Math.sin(rad)*(P.case_depth+P.stand_clearance);
+   const height=slotZ-Math.sin(rad)*clearance;
+   return [x-P.stand_width/2,z-height-P.case_height/2,front-y];
+  }
+  if(name==="rear-cover")z+=explode*0.85;
+  if(name==="kit")z+=explode*0.35;
+  return [x-P.case_width/2,Math.cos(rad)*y-Math.sin(rad)*z-P.case_height/2,-Math.sin(rad)*y-Math.cos(rad)*z];
+ }
+ function cuboid(origin,size){const [x,y,z]=origin,[w,h,d]=size;
+  return {vertices:[[x,y,z],[x+w,y,z],[x+w,y+h,z],[x,y+h,z],[x,y,z+d],[x+w,y,z+d],[x+w,y+h,z+d],[x,y+h,z+d]],
+  faces:[[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[3,7,6],[3,6,2],[0,4,7],[0,7,3],[1,2,6],[1,6,5]]};
+ }
+ const kit=cuboid(MODEL.kit.origin,MODEL.kit.size);
+ const displayW=P.screen_active_width,displayH=P.screen_active_height;
+ const sx=MODEL.kit.origin[0]+P.screen_center_from_kit_left,sy=MODEL.kit.origin[1]+P.screen_center_from_kit_bottom,sz=P.front_thickness+P.screen_recess-0.02;
+ const screen={vertices:[[sx-displayW/2,sy-displayH/2,sz],[sx+displayW/2,sy-displayH/2,sz],[sx+displayW/2,sy+displayH/2,sz],[sx-displayW/2,sy+displayH/2,sz]],faces:[[0,2,1],[0,3,2]]};
+ function makeBuffer(data,name,explode,texture=false){
+  const vertices=data.vertices.map(v=>world(v,name,explode)),out=[];
+  for(const face of data.faces){
+   const order=[face[0],face[2],face[1]],a=vertices[order[0]],b=vertices[order[1]],c=vertices[order[2]];
+   const u=b.map((v,i)=>v-a[i]),v=c.map((q,i)=>q-a[i]);
+   let n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],len=Math.hypot(...n);n=n.map(q=>q/len);
+   for(const i of order){const uv=texture?[[0,0],[1,0],[1,1],[0,1]][i]:[-1,-1];out.push(...vertices[i],...n,...uv);}
+  }
+  const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(out),gl.STATIC_DRAW);
+  return {buffer,count:out.length/8};
+ }
+ const items={};let explode=0;
+ function rebuild(){for(const item of Object.values(items))gl.deleteBuffer(item.buffer);
+  for(const name of ["front-shell","rear-cover","desk-stand"])items[name]=makeBuffer(MODEL[name],name,explode);
+  items.kit=makeBuffer(kit,"kit",explode);items.screen=makeBuffer(screen,"kit",explode,true);
+ }
+ const photo=document.createElement("canvas");photo.width=512;photo.height=512;const ctx=photo.getContext("2d");
+ const sky=ctx.createLinearGradient(0,0,0,512);sky.addColorStop(0,"#e8bd96");sky.addColorStop(.6,"#e8d7b7");sky.addColorStop(1,"#617775");ctx.fillStyle=sky;ctx.fillRect(0,0,512,512);
+ ctx.fillStyle="#faf0c9";ctx.beginPath();ctx.arc(365,151,38,0,Math.PI*2);ctx.fill();
+ function mountain(points,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,512);for(const [x,y]of points)ctx.lineTo(x,y);ctx.lineTo(512,512);ctx.fill();}
+ mountain([[0,300],[90,220],[180,278],[300,180],[440,282],[512,240]],"#8b9691");
+ mountain([[0,365],[110,273],[220,350],[340,261],[512,345]],"#536d68");
+ mountain([[0,440],[140,355],[270,399],[420,323],[512,370]],"#294e48");
+ const shade=ctx.createLinearGradient(0,330,0,512);shade.addColorStop(0,"#00000000");shade.addColorStop(1,"#102d2bd9");ctx.fillStyle=shade;ctx.fillRect(0,330,512,182);
+ ctx.fillStyle="#fff5dd";ctx.textAlign="center";ctx.font="54px Georgia";ctx.fillText("14:18",256,435);ctx.font="15px sans-serif";ctx.fillText("SATURDAY, OCTOBER 17",256,467);
+ const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,photo);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ let yaw=-0.28,pitch=0.08,distance=290,color=[.914,.875,.808],scheduled=false;
+ function render(){scheduled=false;
+  const ratio=Math.min(devicePixelRatio||1,2),width=Math.round(canvas.clientWidth*ratio),height=Math.round(canvas.clientHeight*ratio);
+  if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+  gl.viewport(0,0,width,height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);
+  let view=multiply(rotationX(pitch),rotationY(yaw));const translation=identity();translation[14]=-distance;view=multiply(translation,view);
+  gl.uniformMatrix4fv(loc.uView,false,new Float32Array(view));gl.uniformMatrix4fv(loc.uMVP,false,new Float32Array(multiply(perspective(width/height),view)));gl.uniform1i(loc.uTexture,0);
+  function draw(name,c){const item=items[name];gl.bindBuffer(gl.ARRAY_BUFFER,item.buffer);
+   for(const [a,size,offset]of [["aPosition",3,0],["aNormal",3,12],["aUV",2,24]]){gl.enableVertexAttribArray(loc[a]);gl.vertexAttribPointer(loc[a],size,gl.FLOAT,false,32,offset);}
+   gl.uniform3fv(loc.uColor,c);gl.drawArrays(gl.TRIANGLES,0,item.count);
+  }
+  if(document.getElementById("shell").checked)draw("front-shell",color);
+  if(document.getElementById("lid").checked)draw("rear-cover",color.map(c=>c*.87));
+  if(document.getElementById("stand").checked)draw("desk-stand",[.48,.55,.44]);
+  if(document.getElementById("kit").checked)draw("kit",[.17,.28,.25]);
+  draw("screen",[1,1,1]);
+  if(gl.getError()!==gl.NO_ERROR)throw Error("WebGL rendering error");
+ }
+ function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(()=>{try{render();}catch(error){fail(error.message);console.error(error);}});}}
+ let drag=null;
+ canvas.addEventListener("pointerdown",e=>{drag=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);});
+ canvas.addEventListener("pointermove",e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.008;pitch=Math.max(-1.4,Math.min(1.4,pitch+(e.clientY-drag[1])*.008));drag=[e.clientX,e.clientY];schedule();});
+ canvas.addEventListener("pointerup",()=>drag=null);canvas.addEventListener("pointercancel",()=>drag=null);
+ canvas.addEventListener("wheel",e=>{e.preventDefault();distance=Math.max(150,Math.min(800,distance+e.deltaY*.3));schedule();},{passive:false});
+ canvas.addEventListener("keydown",e=>{if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","+","-"].includes(e.key))return;e.preventDefault();if(e.key==="ArrowLeft")yaw-=.1;if(e.key==="ArrowRight")yaw+=.1;if(e.key==="ArrowUp")pitch-=.1;if(e.key==="ArrowDown")pitch+=.1;if(e.key==="+")distance=Math.max(150,distance-20);if(e.key==="-")distance=Math.min(800,distance+20);schedule();});
+ document.getElementById("explode").addEventListener("input",e=>{explode=Number(e.target.value);document.getElementById("explode-value").textContent=explode+"%";document.getElementById("view-status").textContent=explode?"Exploded assembly - rear cover and kit moved apart":"Assembly view";rebuild();schedule();});
+ for(const id of ["shell","lid","kit","stand"])document.getElementById(id).addEventListener("change",schedule);
+ for(const button of document.querySelectorAll(".swatch"))button.addEventListener("click",()=>{color=[1,3,5].map(i=>parseInt(button.dataset.color.slice(i,i+2),16)/255);document.querySelectorAll(".swatch").forEach(b=>b.setAttribute("aria-pressed",String(b===button)));schedule();});
+ for(const [id,y,p]of [["front",0,-rad],["rear",Math.PI,rad],["perspective",-.45,.16]])document.getElementById(id).addEventListener("click",()=>{yaw=y;pitch=p;document.getElementById("view-status").textContent=id[0].toUpperCase()+id.slice(1)+" view";schedule();});
+ document.getElementById("reset").addEventListener("click",()=>{yaw=-.28;pitch=.08;distance=290;document.getElementById("explode").value=0;explode=0;document.getElementById("explode-value").textContent="0%";for(const id of ["shell","lid","stand"])document.getElementById(id).checked=true;document.getElementById("kit").checked=false;document.querySelector('.swatch[data-color="#e9dfce"]').click();document.getElementById("view-status").textContent="Assembly view";rebuild();schedule();});
+ canvas.addEventListener("webglcontextlost",e=>{e.preventDefault();fail("The graphics context was lost. Reload the page to restore the preview.");});
+ new ResizeObserver(schedule).observe(canvas);rebuild();schedule();
+ window.framePreview={get state(){return {yaw,pitch,distance,explode,parts:Object.keys(items)};}};
+}
+</script>
+</body>
+</html>

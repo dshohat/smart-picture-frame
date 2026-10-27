@@ -1,0 +1,86 @@
+{
+  "front-shell": {
+    "size_mm": [
+      91.8,
+      139.3,
+      24.5
+    ],
+    "volume_cm3": 56.127,
+    "triangles": 1924,
+    "watertight": true,
+    "connected_solids": 1,
+    "print_bed_min_z": 0.0
+  },
+  "rear-cover": {
+    "size_mm": [
+      91.8,
+      139.3,
+      6.3
+    ],
+    "volume_cm3": 35.399,
+    "triangles": 6370,
+    "watertight": true,
+    "connected_solids": 1,
+    "print_bed_min_z": 0.0
+  },
+  "desk-stand": {
+    "size_mm": [
+      107.8,
+      70.0,
+      24.0
+    ],
+    "volume_cm3": 124.966,
+    "triangles": 244,
+    "watertight": true,
+    "connected_solids": 1,
+    "print_bed_min_z": 0.0
+  },
+  "alignment-gauge": {
+    "size_mm": [
+      85.0,
+      112.0,
+      0.8
+    ],
+    "volume_cm3": 5.369,
+    "triangles": 416,
+    "watertight": true,
+    "connected_solids": 1,
+    "print_bed_min_z": 0.0
+  },
+  "assembly": {
+    "case_width": 91.8,
+    "case_height": 139.3,
+    "case_depth": 27.5,
+    "stand_width": 107.8,
+    "slot_y": 18,
+    "kit_origin": [
+      3.4,
+      16.4,
+      4.2
+    ],
+    "screw_positions": [
+      [
+        40.4,
+        5.4
+      ],
+      [
+        86.4,
+        5.4
+      ],
+      [
+        5.4,
+        133.9
+      ],
+      [
+        86.4,
+        133.9
+      ]
+    ],
+    "shell_lid_intersection_mm3": -0.0,
+    "case_stand_intersection_mm3": -0.0,
+    "kit_rear_mm": 20.2,
+    "screen_position_status": "measured from the kit illustration scaled to 85 x 112 mm; verify with the template",
+    "support_seat_status": "inferred rear corner locations; inspect before mounting",
+    "units": "mm"
+  }
+}
