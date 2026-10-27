@@ -63,6 +63,8 @@ def load_params():
     d['pad_top'] = d['board_back'] + p['rear_pad_thickness']
     d['wx'] = d['bx'] + p['screen_center_from_kit_left'] - p['window_width'] / 2
     d['wy'] = d['by'] + p['screen_center_from_kit_bottom'] - p['window_height'] / 2
+    d['cam_x'] = d['bx'] + p['camera_center_from_kit_left']
+    d['cam_y'] = d['by'] + p['camera_center_from_kit_bottom']
     r = p['screw_boss_diameter'] / 2
     wall = p['wall']
     usb_x0 = d['bx'] + p['usb_bay_from_kit_left']
@@ -176,6 +178,14 @@ def build_front_shell(comp, p, d):
           *zf(-EPS, face + EPS), CUT, body)
     prism(comp, 'Window inside relief', lambda sk: rrect(sk, d['wx'] - 1, d['wy'] - 1, ww + 2, wh + 2, wr),
           *zf(face - 0.8, face), CUT, body)
+    # OV2640 lens on the WROOM module stands proud of the display glass: round hole for
+    # the barrel, square relief on the inside for the 9 x 9 mm holder base.
+    prism(comp, 'Camera hole', lambda sk: circle(sk, d['cam_x'], d['cam_y'], p['camera_hole_diameter']),
+          *zf(-EPS, face + EPS), CUT, body)
+    sq = p['camera_relief_size']
+    prism(comp, 'Camera holder relief',
+          lambda sk: rrect(sk, d['cam_x'] - sq / 2, d['cam_y'] - sq / 2, sq, sq, 0),
+          *zf(face - p['camera_relief_depth'], face + EPS), CUT, body)
     prism(comp, 'Screw pilot holes',
           lambda sk: [circle(sk, x, y, p['screw_pilot_diameter']) for x, y in d['screws']],
           *zf(depth - 12, depth + EPS), CUT, body)
@@ -288,6 +298,10 @@ def build_gauge(comp, p):
           lambda sk: rrect(sk, p['screen_center_from_kit_left'] - ww / 2,
                            p['screen_center_from_kit_bottom'] - wh / 2, ww, wh, p['window_radius']),
           -EPS, 0.8 + EPS, CUT, body)
+    prism(comp, 'Gauge camera hole',
+          lambda sk: circle(sk, p['camera_center_from_kit_left'], p['camera_center_from_kit_bottom'],
+                            p['camera_hole_diameter']),
+          -EPS, 0.8 + EPS, CUT, body)
     return body
 
 
@@ -320,6 +334,9 @@ def run(context):
             ('window_height', p['window_height'], 'mm', 'Screen window'),
             ('screen_center_x', p['screen_center_from_kit_left'], 'mm', 'Active screen centre from kit left (measured)'),
             ('screen_center_y', p['screen_center_from_kit_bottom'], 'mm', 'Active screen centre from kit bottom (measured)'),
+            ('camera_center_x', p['camera_center_from_kit_left'], 'mm', 'OV2640 lens centre from kit left (estimated from photo)'),
+            ('camera_center_y', p['camera_center_from_kit_bottom'], 'mm', 'OV2640 lens centre from kit bottom (estimated from photo)'),
+            ('camera_hole_diameter', p['camera_hole_diameter'], 'mm', 'Through-hole for the lens barrel'),
             ('stand_angle', p['stand_angle'], 'deg', 'Desk stand lean'),
             ('stand_depth', p['stand_depth'], 'mm', 'Desk stand front-to-back'),
             ('stand_height', p['stand_height'], 'mm', 'Desk stand height'),

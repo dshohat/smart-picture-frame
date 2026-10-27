@@ -52,6 +52,7 @@ def layout_drawing():
     kw, kh = P["kit_width"], P["kit_height"]
     ww, wh = P["window_width"], P["window_height"]
     cx, cy = P["screen_center_from_kit_left"], P["screen_center_from_kit_bottom"]
+    kx, ky, kd = P["camera_center_from_kit_left"], P["camera_center_from_kit_bottom"], P["camera_hole_diameter"]
     ox, oy = 14, 18  # kit origin on the page (top-left of the kit outline)
 
     def X(x):
@@ -97,6 +98,8 @@ def layout_drawing():
         dim_v(Y(kh), Y(sy + wh), X(kw) + 7, f"{kh - sy - wh:.1f}", left=False),
         dim_h(X(0), X(cx), Y(cy), f"screen centre {cx:g} from left"),
         dim_v(Y(cy), Y(0), X(cx), f"{cy:g} from bottom", left=False),
+        dim_h(X(0), X(kx), Y(ky), f"camera {kx:g}"),
+        dim_v(Y(ky), Y(0), X(kx), f"{ky:g}", left=True),
     ])
     svg = (
         '<svg xmlns="http://www.w3.org/2000/svg" width="150mm" height="175mm" viewBox="0 0 150 175" '
@@ -106,12 +109,13 @@ def layout_drawing():
         '<g stroke="black" stroke-width=".35" fill="none">\n'
         f'<rect x="{X(0)}" y="{Y(kh)}" width="{kw}" height="{kh}" rx="2"/>\n'
         f'<rect x="{X(sx):.2f}" y="{Y(sy + wh):.2f}" width="{ww}" height="{wh}" rx=".8" stroke="#c0392b" stroke-width=".5"/>\n'
+        f'<circle cx="{X(kx):.2f}" cy="{Y(ky):.2f}" r="{kd / 2:.2f}" stroke="#c0392b" stroke-width=".5"/>\n'
         '</g>\n'
         f'{"".join(parts)}\n'
         f'<g stroke="#1f5fa8" stroke-width=".25" fill="#1f5fa8">{dims}</g>\n'
         '<g font-size="2.4" fill="#333">\n'
-        f'<text x="{ox}" y="{Y(0) + 13}">Red = frame window (cut out). Solid grey = active screen as measured. Dashed = other parts, approximate.</text>\n'
-        f'<text x="{ox}" y="{Y(0) + 17}">Lay this on the unpowered kit: the outline must match the board edge and the whole lit screen must sit inside the red window.</text>\n'
+        f'<text x="{ox}" y="{Y(0) + 13}">Red = frame window and camera hole (cut out). Solid grey = active screen as measured. Dashed = other parts, approximate.</text>\n'
+        f'<text x="{ox}" y="{Y(0) + 17}">Lay this on the unpowered kit: the outline must match the board edge, the whole lit screen must sit inside the red window, the lens inside the circle.</text>\n'
         f'<text x="{ox}" y="{Y(0) + 21}">If anything is off, note the mm difference, change dimensions.json and rerun build_model.py.</text>\n'
         '</g>\n'
         f'<g stroke="black" stroke-width=".35" fill="none"><path d="M{ox} {Y(0) + 27}h50m-50 -2v4m50 -4v4"/></g>\n'
@@ -145,6 +149,10 @@ def layout_overlay():
     d.rectangle([bx0 + wx * sx, by1 - (wy + wh) * sy, bx0 + (wx + ww) * sx, by1 - wy * sy],
                 outline=(255, 140, 0), width=8)
     d.text((bx0 + wx * sx + 8, by1 - wy * sy + 10), f"frame window {ww:g} x {wh:g} mm", fill=(255, 140, 0))
+    kx, ky, kr = P["camera_center_from_kit_left"], P["camera_center_from_kit_bottom"], P["camera_hole_diameter"] / 2
+    d.ellipse([bx0 + (kx - kr) * sx, by1 - (ky + kr) * sy, bx0 + (kx + kr) * sx, by1 - (ky - kr) * sy],
+              outline=(255, 140, 0), width=8)
+    d.text((bx0 + (kx + kr) * sx + 8, by1 - ky * sy), f"camera hole d{2 * kr:g} @ ({kx:g},{ky:g})", fill=(255, 140, 0))
     for mm in range(0, int(P["kit_width"]) + 1, 10):
         x = bx0 + mm * sx
         d.line([(x, by0), (x, by0 + 40)], fill=(0, 0, 0), width=3)
@@ -182,6 +190,18 @@ def build():
         raise ValueError("Corner radius too small for the lid tongue")
     wx = bx + P["screen_center_from_kit_left"] - ww / 2
     wy = by + P["screen_center_from_kit_bottom"] - wh / 2
+    # OV2640 lens on the ESP32-S3 WROOM module: the 9 x 9 mm holder stands 6.45 mm
+    # above the module shield, which is roughly level with the display glass, so the
+    # barrel passes through the face and the square base reaches its inside surface.
+    cam_x = bx + P["camera_center_from_kit_left"]
+    cam_y = by + P["camera_center_from_kit_bottom"]
+    cam_d, cam_sq, cam_rd = P["camera_hole_diameter"], P["camera_relief_size"], P["camera_relief_depth"]
+    if not (cam_d < cam_sq and 0 < cam_rd < face - 0.6):
+        raise ValueError("Camera relief must be wider than the hole and leave >= 0.6 mm of face")
+    if cam_x + cam_sq / 2 > wx - 2 and cam_y + cam_sq / 2 > wy - 2 and cam_y - cam_sq / 2 < wy + wh + 2:
+        raise ValueError("Camera hole runs into the screen window")
+    if cam_x - cam_sq / 2 < wall + 1 or cam_y - cam_sq / 2 < by or cam_y + cam_sq / 2 > by + kh:
+        raise ValueError("Camera hole is not over the kit area inside the walls")
 
     # USB plugs enter from the kit's bottom-left edge, so no boss may sit there.
     # Bosses are embedded 1 mm into the walls so they fuse cleanly (no tangent faces).
@@ -203,6 +223,8 @@ def build():
     # A wider inside mouth avoids touching the LCD bezel around the visible opening.
     shell -= rounded(wx - 1, wy - 1, face - 0.8, ww + 2, wh + 2,
                      1, P["window_radius"])
+    shell -= cylinder(cam_x, cam_y, -EPS, cam_d, face + 2 * EPS)
+    shell -= box(cam_x - cam_sq / 2, cam_y - cam_sq / 2, face - cam_rd, cam_sq, cam_sq, cam_rd + 1)
     for x, y in screws:
         shell -= cylinder(x, y, depth - 12, P["screw_pilot_diameter"], 12 + EPS)
 
@@ -272,6 +294,7 @@ def build():
     gauge -= rounded(P["screen_center_from_kit_left"] - ww / 2,
                      P["screen_center_from_kit_bottom"] - wh / 2,
                      -EPS, ww, wh, 1, P["window_radius"])
+    gauge -= cylinder(P["camera_center_from_kit_left"], P["camera_center_from_kit_bottom"], -EPS, cam_d, 1)
     solids = {"front-shell": shell, "rear-cover": lid, "desk-stand": stand,
               "alignment-gauge": gauge}
     assembled = {name: mesh(solid) for name, solid in solids.items()}

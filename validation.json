@@ -5,8 +5,8 @@
       139.3,
       24.5
     ],
-    "volume_cm3": 56.127,
-    "triangles": 1924,
+    "volume_cm3": 55.806,
+    "triangles": 2138,
     "watertight": true,
     "connected_solids": 1,
     "print_bed_min_z": 0.0
@@ -41,8 +41,8 @@
       112.0,
       0.8
     ],
-    "volume_cm3": 5.369,
-    "triangles": 416,
+    "volume_cm3": 5.306,
+    "triangles": 612,
     "watertight": true,
     "connected_solids": 1,
     "print_bed_min_z": 0.0

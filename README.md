@@ -73,6 +73,9 @@ in this design; it is intended for pictures/time, not full access to every demo.
 | Active screen on kit | 44.7 x 58.4 mm at x 36.2-80.8, y 14.6-73.0 (centre 58.5 / 43.8) | **Measured** from the supplied Development_Kit.jpg illustration, scaled independently in X and Y to the 85 x 112 mm envelope (the picture is a rendering, not a drawing) |
 | Other parts (speakers, boards, ports) | see `assumed_layout` in dimensions.json | Same photo measurement; approximate, drawn dashed on the template |
 | Viewing window | 46 x 61 mm | 0.65 / 1.3 mm allowance around the measured active area; verify no edge clipping |
+| Camera module | OV2640 HDF3M-811: 9 x 9 mm holder, 6.15 mm tall on a 0.3 mm FPC, 62° FOV | `Datasheet/OV2640/HDF3M-811-2640.pdf`; Tutorial p.31 mounts it folded flat onto the ESP32-S3 WROOM module |
+| Camera lens on kit | centre x 13.5, y 46.0 (±1.5) | **Estimated** from a top-down photo of the assembled kit: 2.54 mm pin pitch as scale, lens 2.7 mm left of the ESP board centreline, 41 mm above its USB edge. The camera only rests on the module, so align it to the hole |
+| Camera hole | Ø10 through the face + 11 x 11 mm relief, 2 mm deep, on the inside | Display and ESP board sit on the same 8.5 mm headers, so the WROOM shield top ≈ display glass and the 6.45 mm camera stands ~6 mm proud of it: the barrel passes through the 3 mm face (~2 mm exposed) and the 9 mm base reaches into the face's back |
 | USB-C sockets | two, pointing out of the kit's bottom edge at x 4-25.5 mm | Photo; plugs need the bottom band |
 | Rear seat positions | 4 mm inward from each kit-envelope corner | **Estimated**; inspect actual rear corner standoffs/contact areas |
 | Kit depth allowance | 16 mm + 1.2 mm front recess | Based on published envelope; protruding wires/plugs may exceed it |
@@ -98,25 +101,30 @@ Sources:
 1. Open [alignment-template.svg](alignment-template.svg), print at **100% actual
    size**, and verify its calibration line measures exactly **50 mm**. Disable
    "fit to page". The sheet is a 1:1 dimensioned drawing of the assumed layout:
-   kit outline, red frame window, measured active screen, and dashed boxes for
-   the speakers, boards and ports with their mm positions. Cut out the red window.
+   kit outline, red frame window and camera circle, measured active screen, and
+   dashed boxes for the speakers, boards and ports with their mm positions. Cut
+   out the red window and the circle.
 2. Place the template over the unpowered kit, with TOP at the speaker end. The
    85 x 112 mm outline should match the main kit footprint. Confirm that the
-   entire active screen fits inside the window. This checks both screen position
+   entire active screen fits inside the window and the camera lens sits centred
+   in the circle (the camera only rests on the WROOM module, so nudge it to fit;
+   the FPC has enough slack for a couple of mm). This checks both screen position
    and envelope orientation. If the dashed boxes land on the wrong parts, the
    whole layout assumption is off; tell me the mm differences.
 3. Alternatively print [alignment-gauge.stl](print/alignment-gauge.stl): an
-   85 x 112 x 0.8 mm physical template. Do not press it against the glass or
-   exposed components.
+   85 x 112 x 0.8 mm physical template with the same window and camera hole.
+   Do not press it against the glass or exposed components.
 4. If it does not align, adjust `screen_center_from_kit_left`,
-   `screen_center_from_kit_bottom`, and/or the window dimensions in
+   `screen_center_from_kit_bottom`, `camera_center_from_kit_left`,
+   `camera_center_from_kit_bottom`, and/or the window dimensions in
    [dimensions.json](dimensions.json), regenerate, and repeat the check.
    Do not scale the STL to compensate; that also changes screw clearances.
 
 The frame is sized from the kit, so the window sits where the screen really is:
 right of centre and low. In portrait orientation the kit sits at X=3.4, Y=16.4 mm
-within the frame; screen centre is X=61.9, Y=60.2 mm. X is right, Y is up from the
-frame bottom, Z runs from the front face toward the back.
+within the frame; screen centre is X=61.9, Y=60.2 mm and the camera hole is at
+X=16.9, Y=62.4 mm. X is right, Y is up from the frame bottom, Z runs from the
+front face toward the back.
 
 ## Printable parts
 
