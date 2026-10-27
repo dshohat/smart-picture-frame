@@ -392,12 +392,17 @@ def run(context):
         }
 
         os.makedirs(OUT_DIR, exist_ok=True)
+        # Let Fusion tessellate the new bodies before archiving. Without this the
+        # .f3d was written with valid solids but empty display meshes, and opened
+        # as an empty viewport (Zoom to Fit found nothing). Cheap; always do it.
+        app.activeViewport.fit()
+        app.activeViewport.refresh()
+        adsk.doEvents()
         em = design.exportManager
         f3d = os.path.join(OUT_DIR, 'smart-picture-frame.f3d')
         step = os.path.join(OUT_DIR, 'smart-picture-frame.step')
         f3d_ok = em.execute(em.createFusionArchiveExportOptions(f3d))
         step_ok = em.execute(em.createSTEPExportOptions(step))
-        app.activeViewport.fit()
 
         expected = {}
         vpath = os.path.join(HERE, 'validation.json')
