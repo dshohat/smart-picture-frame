@@ -74,7 +74,7 @@ in this design; it is intended for pictures/time, not full access to every demo.
 | Other parts (speakers, boards, ports) | see `assumed_layout` in dimensions.json | Same photo measurement; approximate, drawn dashed on the template |
 | Viewing window | 46 x 61 mm | 0.65 / 1.3 mm allowance around the measured active area; verify no edge clipping |
 | Camera module | OV2640 HDF3M-811: 9 x 9 mm holder, 6.15 mm tall on a 0.3 mm FPC, 62° FOV | `Datasheet/OV2640/HDF3M-811-2640.pdf`; Tutorial p.31 mounts it folded flat onto the ESP32-S3 WROOM module |
-| Camera lens on kit | centre x 13.5, y 46.0 (±1.5) | **Estimated** from a top-down photo of the assembled kit: 2.54 mm pin pitch as scale, lens 2.7 mm left of the ESP board centreline, 41 mm above its USB edge. The camera only rests on the module, so align it to the hole |
+| Camera lens on kit | centre x 11.0, y 46.0 | x **fitted**: the first shell (x 13.5, estimated from a photo) pinned the barrel against the hole's left wall, so the hole was moved 2.5 mm away from the screen. y from the photo (2.54 mm pin pitch as scale), confirmed centred by the first print. The camera only rests on the module, so align it to the hole |
 | Camera hole | Ø10 through the face + 11 x 11 mm relief, 2 mm deep, on the inside | Display and ESP board sit on the same 8.5 mm headers, so the WROOM shield top ≈ display glass and the 6.45 mm camera stands ~6 mm proud of it: the barrel passes through the 3 mm face (~2 mm exposed) and the 9 mm base reaches into the face's back |
 | USB-C sockets | two, pointing out of the kit's bottom edge at x 4-25.5 mm | Photo; plugs need the bottom band |
 | Rear seat positions | 4 mm inward from each kit-envelope corner | **Estimated**; inspect actual rear corner standoffs/contact areas |
@@ -123,7 +123,7 @@ Sources:
 The frame is sized from the kit, so the window sits where the screen really is:
 right of centre and low. In portrait orientation the kit sits at X=3.4, Y=16.4 mm
 within the frame; screen centre is X=61.9, Y=60.2 mm and the camera hole is at
-X=16.9, Y=62.4 mm. X is right, Y is up from the frame bottom, Z runs from the
+X=14.4, Y=62.4 mm. X is right, Y is up from the frame bottom, Z runs from the
 front face toward the back.
 
 ## Printable parts
